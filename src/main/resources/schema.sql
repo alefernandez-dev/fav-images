@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS categories (
+    id IDENTITY NOT NULL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS  images (
+    id VARCHAR(36) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    detail VARCHAR(255),
+    file_name VARCHAR(255) NOT NULL,
+    category_id BIGINT NOT NULL,
+    FOREIGN KEY (category_id) REFERENCES categories(id)
+);
