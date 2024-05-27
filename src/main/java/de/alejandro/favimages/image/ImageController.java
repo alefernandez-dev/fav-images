@@ -38,34 +38,14 @@ public class ImageController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ImageResponse>> list(@RequestParam(required = false, defaultValue = "10") int limit) {
-        var images = service.list(limit)
-                .stream()
-                .map(i -> new ImageResponse(
-                        i.id(),
-                        i.name(),
-                        i.detail(),
-                        i.category().categoryId(),
-                        i.category().categoryName(),
-                        String.join("/", baseUrl, "images",i.imageFileName())
-                ))
-                .toList();
+    public ResponseEntity<List<ImageResponse>> list(@RequestParam(required = false, defaultValue = "10") int limit, @RequestParam(required = false, defaultValue = "") String q) {
+        var images = getImageResponses(service.list(limit, q));
         return ResponseEntity.ok(images);
     }
 
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<List<ImageResponse>> findByCategory(@RequestParam(required = false, defaultValue = "10") int limit, @PathVariable Long categoryId) {
-        var images = service.findByCategory(categoryId, limit)
-                .stream()
-                .map(i -> new ImageResponse(
-                        i.id(),
-                        i.name(),
-                        i.detail(),
-                        i.category().categoryId(),
-                        i.category().categoryName(),
-                        String.join("/", baseUrl, "images", i.imageFileName())
-                ))
-                .toList();
+        var images = getImageResponses(service.findByCategory(categoryId, limit));
         return ResponseEntity.ok(images);
     }
 
@@ -103,6 +83,20 @@ public class ImageController {
                 imageId
         );
         return ResponseEntity.ok().build();
+    }
+
+    private List<ImageResponse> getImageResponses(List<Image> images) {
+        return images
+                .stream()
+                .map(i -> new ImageResponse(
+                        i.id(),
+                        i.name(),
+                        i.detail(),
+                        i.category().categoryId(),
+                        i.category().categoryName(),
+                        String.join("/", baseUrl, "images", i.imageFileName())
+                ))
+                .toList();
     }
 
 }

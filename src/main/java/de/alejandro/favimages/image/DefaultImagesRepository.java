@@ -1,6 +1,5 @@
 package de.alejandro.favimages.image;
 
-import de.alejandro.favimages.category.DefaultCategoryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -14,17 +13,18 @@ public class DefaultImagesRepository implements ImageRepository {
     private static final Logger log = LoggerFactory.getLogger(DefaultImagesRepository.class);
 
 
-    private static final String LIST_IMAGES = """
-             SELECT i.id AS image_id,
-                  i.name AS image_name,
-                  i.detail AS image_detail,
-                  i.file_name AS image_file_name,
-                  c.id AS category_id,
-                  c.name AS category_name
-             FROM images i
-             JOIN categories c ON i.category_id = c.id
-             LIMIT :limit;
-             """;
+    private static final String LIST_IMAGES_BY_NAME_OR_DETAIL = """
+            SELECT i.id AS image_id,
+                   i.name AS image_name,
+                   i.detail AS image_detail,
+                   i.file_name AS image_file_name,
+                   c.id AS category_id,
+                   c.name AS category_name
+            FROM images i
+            JOIN categories c ON i.category_id = c.id
+            WHERE i.name LIKE CONCAT('%', :searchText, '%') OR i.detail LIKE CONCAT('%', :searchText, '%')
+            LIMIT :limit;
+            """;
     private static final String LIST_BY_CATEGORY = """
             SELECT
                 i.id AS image_id,
@@ -61,13 +61,13 @@ public class DefaultImagesRepository implements ImageRepository {
     }
 
     @Override
-    public List<Image> list(int limit) {
-        return jdbcClient.sql(LIST_IMAGES).param("limit", limit).query(new ImageRowMapper()).list();
-    }
-
-    @Override
     public List<Image> findByNameAndDetail(String nameOrDetail, int limit) {
-        return List.of();
+        return jdbcClient
+                .sql(LIST_IMAGES_BY_NAME_OR_DETAIL)
+                .param("searchText", nameOrDetail)
+                .param("limit", limit)
+                .query(new ImageRowMapper())
+                .list();
     }
 
     @Override

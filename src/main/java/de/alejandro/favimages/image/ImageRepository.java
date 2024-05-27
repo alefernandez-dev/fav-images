@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ImageRepository {
-    List<Image> list(int limit);
     List<Image> findByNameAndDetail(String nameOrDetail, int limit);
     List<Image> findByCategory(Long catgoryId, int limit);
     Optional<Image> findById(UUID imageId);

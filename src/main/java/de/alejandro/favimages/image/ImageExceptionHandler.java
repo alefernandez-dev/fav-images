@@ -42,7 +42,7 @@ public class ImageExceptionHandler {
     @ExceptionHandler(IOException.class)
     public ResponseEntity<MessageResponse<String>> handleIOException(IOException e) {
         log.error(e.getMessage(), e);
-        return ResponseEntity.internalServerError().body(new MessageResponse<>("input/output error: Unable to access the requested file", false, 500));
+        return ResponseEntity.internalServerError().body(new MessageResponse<>("input/output error", false, 500));
     }
 
 }

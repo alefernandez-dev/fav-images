@@ -29,8 +29,8 @@ public class ImageService {
         return fileHandlerService.read(name);
     }
 
-    public List<Image> list(int limit) {
-        return imageRepository.list(limit);
+    public List<Image> list(int limit, String nameOrDetail) {
+        return imageRepository.findByNameAndDetail(nameOrDetail, limit);
     }
 
     public List<Image> findByCategory(Long categoryId, int limit) {
